@@ -7,17 +7,22 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var database *sql.DB
+var Database *sql.DB
 
-func initdatabase() {
+// initDatabase initializes the connection to the database
+func initDatabase(dsn string) error {
 	var err error
-	connStr := "postgres://feedback:tapirhorse@localhost/tapir_nain?sslmode=disable"
-	database, err = sql.Open("postgres", connStr)
+	// Open the database connection using the provided DSN
+	Database, err = sql.Open("postgres", dsn)
 	if err != nil {
-		log.Fatal("fail toconnect to database", err)
-		if err := database.Ping(); err != nil {
-			log.Fatal("failed to ping the database", err)
-		}
-		log.Println("Successfully connected to the database.")
+		return err
 	}
+
+	// Ensure the connection is successful by pinging the database
+	if err := Database.Ping(); err != nil {
+		return err
+	}
+
+	log.Println("Successfully connected to the database.")
+	return nil
 }

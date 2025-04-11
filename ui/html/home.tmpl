@@ -2,27 +2,105 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Grade Management System</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* Reset and base styles */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #007BFF, #6C63FF);
+            color: #fff;
+        }
+
+        /* Flexbox container to structure the layout */
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.2); /* Transparent overlay */
+            padding: 40px 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        nav {
+            margin: 40px auto;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline-block;
+            margin: 0 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 2px solid #fff;
+            border-radius: 25px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        nav ul li a:hover {
+            background: #fff;
+            color: #007BFF;
+            transform: scale(1.1);
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.2); /* Transparent overlay */
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: auto;
+            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to Smart Grade Management System</h1>
-    </header>
-
-    <nav>
-        <ul>
-            <li><a href="/grades">Manage Grades</a></li>
-            <li><a href="/attendance">Manage Attendance</a></li>
-        </ul>
-    </nav>
-
-    <main>
-        <p>This system allows you to manage and track student grades and attendance efficiently.</p>
-    </main>
-
-    <footer>
-        <p>&copy; {{ .Year }} Smart Grade Management System</p>
-    </footer>
+    <div class="wrapper">
+        <header>
+            <h1>Welcome to the Smart Grade Management System</h1>
+        </header>
+        <nav>
+            <ul>
+                <li><a href="/grade">View Grades</a></li>
+                <li><a href="/create_grade">Create Grade</a></li>
+               
+                
+            </ul>
+        </nav>
+        <footer>
+            <p>Advance Database Test 1 - 2025 | Smart Grade Management By Nain Victorin</p>
+        </footer>
+    </div>
 </body>
 </html>

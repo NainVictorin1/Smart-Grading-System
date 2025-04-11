@@ -1,76 +1,60 @@
 package main
 
 import (
-	"context"
-	"database/sql"
 	"flag"
 	"html/template"
 	"log/slog"
 	"os"
-	"time"
 
 	"github.com/NainVictorin1/smart-grade-system/internal/data"
-
-	_ "github.com/lib/pq"
 )
 
 type application struct {
 	addr          *string
-	feedback      *data.FeedbackModel
 	logger        *slog.Logger
+	grades        *data.GradeModel
 	templateCache map[string]*template.Template
 }
 
 func main() {
-	addr := flag.String("addr", "", "HTTP network address")
+	addr := flag.String("addr", ":4000", "HTTP network address") // Set a default address
 	dsn := flag.String("dsn", "", "PostgreSQL DSN")
 
 	flag.Parse()
 
+	// Initialize logger
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
-	db, err := openDB(*dsn)
+
+	// Initialize the database connection
+	err := initDatabase(*dsn)
 	if err != nil {
-		logger.Error(err.Error())
+		logger.Error("Failed to connect to the database", "error", err)
 		os.Exit(1)
 	}
 
-	logger.Info("database connection pool established")
+	logger.Info("Database connection pool established")
+
+	// Load the template cache
 	templateCache, err := newTemplateCache()
 	if err != nil {
-		logger.Error(err.Error())
+		logger.Error("Failed to load templates", "error", err)
 		os.Exit(1)
 	}
 
-	defer db.Close()
+	defer Database.Close()
 
+	// Initialize application with the logger, grade model, and template cache
 	app := &application{
 		addr:          addr,
-		feedback:      &data.FeedbackModel{DB: db},
+		grades:        &data.GradeModel{DB: Database},
 		logger:        logger,
 		templateCache: templateCache,
 	}
 
-	err = app.serve()
+	// Start the HTTP server using the ServeHTTP method from server.go
+	err = app.ServeHTTP()
 	if err != nil {
-		logger.Error(err.Error())
+		logger.Error("Failed to start server", "error", err)
 		os.Exit(1)
 	}
-}
-
-func openDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	err = db.PingContext(ctx)
-	if err != nil {
-		db.Close()
-		return nil, err
-	}
-
-	return db, nil
 }

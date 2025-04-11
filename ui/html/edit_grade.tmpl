@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Grade</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        input:focus {
+            border-color: #007BFF;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007BFF;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Grade</h1>
+        <form action="/edit_grade?id={{.ID}}" method="POST">
+            {{if .FormErrors.fullname}}
+            <p class="error">{{.FormErrors.fullname}}</p>
+            {{end}}
+            <label for="fullname">Fullname:</label>
+            <input type="text" name="fullname" id="fullname" value="{{index .FormData "fullname"}}" required>
+
+            {{if .FormErrors.email}}
+            <p class="error">{{.FormErrors.email}}</p>
+            {{end}}
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" value="{{index .FormData "email"}}" required>
+
+            {{if .FormErrors.subject}}
+            <p class="error">{{.FormErrors.subject}}</p>
+            {{end}}
+            <label for="subject">Subject:</label>
+            <input type="text" name="subject" id="subject" value="{{index .FormData "subject"}}" required>
+
+            {{if .FormErrors.grade}}
+            <p class="error">{{.FormErrors.grade}}</p>
+            {{end}}
+            <label for="grade">Grade:</label>
+            <input type="text" name="grade" id="grade" value="{{index .FormData "grade"}}" required>
+
+            <button type="submit">Update Grade</button>
+        </form>
+        <a href="/grades">Back to Grades</a>
+    </div>
+</body>
+</html>

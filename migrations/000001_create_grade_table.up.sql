@@ -1,9 +1,8 @@
-CREATE TABLE IF NOT EXISTS grade(
-    id bigserial PRIMARY KEY,
-    created_at timestamp(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    fullname text NOT NULL,
-    subject text NOT NULL,
-    grade NUMERIC NOT Null,
-    email citext NOT NUll
-
+CREATE TABLE grade (
+    id BIGINT PRIMARY KEY DEFAULT nextval('grade_id_seq'::regclass),
+    created_at TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT now(),
+    fullname TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    grade NUMERIC(5, 2) NOT NULL,
+    email CITEXT NOT NULL
 );

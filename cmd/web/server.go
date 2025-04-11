@@ -1,20 +1,26 @@
 package main
 
 import (
-	"log/slog"
+	"fmt"
 	"net/http"
 	"time"
 )
 
-func (app *application) serve() error {
-	srv := &http.Server{
-		Addr:         *app.addr,
-		Handler:      app.routes(),
-		IdleTimeout:  time.Minute,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		ErrorLog:     slog.NewLogLogger(app.logger.Handler(), slog.LevelError),
+// ServeHTTP initializes and starts the HTTP server.
+func (app *application) ServeHTTP() error {
+	// Register the routes
+	app.routes()
+
+	// Create a custom HTTP server with timeouts
+	server := &http.Server{
+		Addr:           *app.addr,            // Address for the server to listen on
+		Handler:        http.DefaultServeMux, // Default mux to handle registered routes
+		ReadTimeout:    10 * time.Second,     // Max duration to read the request
+		WriteTimeout:   10 * time.Second,     // Max duration for writing a response
+		MaxHeaderBytes: 1 << 20,              // Max header size (1 MB)
 	}
-	app.logger.Info("starting server", "addr", srv.Addr)
-	return srv.ListenAndServe()
+
+	// Log and start the server
+	fmt.Printf("Server starting on %s\n", *app.addr)
+	return server.ListenAndServe()
 }
