@@ -78,7 +78,7 @@
 <body>
     <div class="container">
         <h1>Edit Grade</h1>
-        <form action="/edit_grade?id={{.ID}}" method="POST">
+        <form action="/grades/edit?id={{.ID}}" method="POST">
             {{if .FormErrors.fullname}}
             <p class="error">{{.FormErrors.fullname}}</p>
             {{end}}

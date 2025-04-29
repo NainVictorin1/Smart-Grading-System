@@ -75,34 +75,42 @@
     </style>
 </head>
 <body>
-    <h1>{{.HeaderText}}</h1>
+    <h1>Create Grade</h1>
     <form action="/create_grade" method="POST">
         {{if .FormErrors.fullname}}
         <p class="error">{{.FormErrors.fullname}}</p>
         {{end}}
         <label for="fullname">Fullname:</label>
         <input type="text" name="fullname" id="fullname" value="{{index .FormData "fullname"}}" required>
-        
+
         {{if .FormErrors.email}}
         <p class="error">{{.FormErrors.email}}</p>
         {{end}}
         <label for="email">Email:</label>
         <input type="email" name="email" id="email" value="{{index .FormData "email"}}" required>
-        
+
         {{if .FormErrors.subject}}
         <p class="error">{{.FormErrors.subject}}</p>
         {{end}}
         <label for="subject">Subject:</label>
         <input type="text" name="subject" id="subject" value="{{index .FormData "subject"}}" required>
-        
+
         {{if .FormErrors.grade}}
         <p class="error">{{.FormErrors.grade}}</p>
         {{end}}
         <label for="grade">Grade:</label>
-        <input type="number" name="grade" id="grade" value="{{index .FormData "grade"}}" required>
-        
-        <button type="submit">Submit</button>
+        <input type="text" name="grade" id="grade" value="{{index .FormData "grade"}}" required>
+
+    <!-- Submit Grade Button -->
+        <button type="submit">Create Grade</button>
     </form>
-    <a href="/grades">Back to Grades</a>
+
+    <!-- View Grades Button -->
+    <a href="/grade" class="button">View Grades</a>
+
+    <!-- Home Button -->
+    <a href="/" class="button button-secondary">Home</a>
+
+
 </body>
 </html>

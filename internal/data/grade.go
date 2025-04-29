@@ -5,8 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"time"
-
-	"github.com/NainVictorin1/smart-grade-system/internal/validator"
+	//"github.com/NainVictorin1/smart-grade-system/internal/validator"
 )
 
 type Grade struct {
@@ -38,17 +37,6 @@ func (m *GradeModel) Insert(grade *Grade) error {
 		grade.Grade,
 		grade.Email,
 	).Scan(&grade.ID, &grade.CreatedAt)
-}
-
-// ValidateGrade checks the grade fields for validity
-func ValidateGrade(v *validator.Validator, grade *Grade) {
-	v.Check(validator.NotBlank(grade.Fullname), "fullname", "must be provided")
-	v.Check(validator.MaxLength(grade.Fullname, 50), "fullname", "must not be more than 50 characters")
-	v.Check(validator.NotBlank(grade.Subject), "subject", "must be provided")
-	v.Check(validator.MaxLength(grade.Subject, 50), "subject", "must not be more than 50 characters")
-	v.Check(validator.NotBlank(grade.Email), "email", "must be provided")
-	v.Check(validator.IsValidEmail(grade.Email), "email", "invalid email address")
-	v.Check(grade.Grade >= 0 && grade.Grade <= 100, "grade", "must be between 0 and 100")
 }
 
 // GetAllGrades retrieves all grades from the database
@@ -90,7 +78,6 @@ func (m *GradeModel) DeleteGrade(id int) error {
 }
 
 // UpdateGrade updates an existing grade in the database
-
 func (m *GradeModel) UpdateGrade(g *Grade) error {
 	query := `
         UPDATE grade
@@ -101,13 +88,20 @@ func (m *GradeModel) UpdateGrade(g *Grade) error {
 	fmt.Printf("Parameters: Fullname=%s, Email=%s, Subject=%s, Grade=%.2f, ID=%d\n",
 		g.Fullname, g.Email, g.Subject, g.Grade, g.ID)
 
-	_, err := m.DB.Exec(query, g.Fullname, g.Email, g.Subject, g.Grade, g.ID)
+	result, err := m.DB.Exec(query, g.Fullname, g.Email, g.Subject, g.Grade, g.ID)
 	if err != nil {
 		fmt.Printf("Error executing query: %v\n", err)
+		return err
 	}
-	return err
-}
 
+	rowsAffected, _ := result.RowsAffected()
+	fmt.Printf("Rows affected: %d\n", rowsAffected)
+	if rowsAffected == 0 {
+		fmt.Println("No rows were updated. Check if the ID exists in the database.")
+	}
+
+	return nil
+}
 func (m *GradeModel) GetGradeByID(id int) (*Grade, error) {
 	query := `SELECT id, fullname, email, subject, grade FROM grade WHERE id = $1`
 

@@ -47,6 +47,20 @@ func MaxLength(value string, n int) bool {
 	return utf8.RuneCountInString(value) <= n
 }
 
+// new
 func IsValidEmail(email string) bool {
-	return EmailRX.MatchString(email)
+	re := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	return re.MatchString(email)
+}
+
+func New() *Validator {
+
+	return &Validator{Errors: make(map[string]string)}
+
+}
+
+func (v *Validator) Valid() bool {
+
+	return len(v.Errors) == 0
+
 }
