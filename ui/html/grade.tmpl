@@ -3,60 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
     <title>{{.Title}}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f9f9f9;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        table {
-            width: 80%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
-        th {
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        a {
-            color: #007BFF;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .back-link {
-            display: block;
-            text-align: center;
-            margin: 20px auto;
-            color: #007BFF;
-            text-decoration: none;
-            font-size: 16px;
-        }
-        .back-link:hover {
-            text-decoration: underline;
-        }
-    </style>
+
 </head>
 <body>
+<div class="list-grades-container">
     <h1>{{.HeaderText}}</h1>
     {{if .SuccessMessage}}
     <p style="color: green; text-align: center;">{{.SuccessMessage}}</p>
@@ -90,9 +42,12 @@
             {{end}}
         </tbody>
     </table>
-    <a href="/create_grade" class="back-link">Create Grade</a>
-   
-    <a href="/" class="back-link">Back to Home</a>
+    
+</div>
+<div class="action-buttons" style="text-align: center;">
+    <a href="/create_grade">Create Grade</a>
+    <a href="/">Back to Home</a>
+</div>
     
 </body>
 </html>

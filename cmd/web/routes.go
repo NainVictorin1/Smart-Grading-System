@@ -8,6 +8,7 @@ import (
 func (app *application) routes() {
 	// Home page route
 	http.HandleFunc("/", app.home)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./ui/static"))))
 
 	// Routes for grade management
 	http.HandleFunc("/grade", app.viewGrade)

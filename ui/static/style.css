@@ -1,0 +1,356 @@
+/* Home Page Specific Styles */
+.home-container {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #007BFF, #6C63FF);
+    color: #fff;
+    height: 100vh;
+}
+
+.home-container .wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.home-container header {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 40px 0;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.home-container header h1 {
+    margin: 0;
+    font-size: 2.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.home-container nav {
+    margin: 40px auto;
+    text-align: center;
+}
+
+.home-container nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.home-container nav ul li {
+    display: inline-block;
+    margin: 0 20px;
+}
+
+.home-container nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: 2px solid #fff;
+    border-radius: 25px;
+    transition: all 0.3s ease-in-out;
+}
+
+.home-container nav ul li a:hover {
+    background: #fff;
+    color: #007BFF;
+    transform: scale(1.1);
+}
+
+.home-container footer {
+    background: rgba(0, 0, 0, 0.2);
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    margin-top: auto;
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.home-container footer p {
+    margin: 0;
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+
+/* Create Grade Page Specific Styles */
+.create-grade-page {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    padding: 40px 20px;
+    min-height: 100vh;
+}
+
+.create-grade-page h1 {
+    text-align: center;
+    color: #333;
+    margin-top: 20px;
+}
+
+.create-grade-page form {
+    width: 50%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.create-grade-page label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+
+.create-grade-page input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.create-grade-page input:focus {
+    border-color: #007BFF;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.create-grade-page button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.create-grade-page button:hover {
+    background-color: #0056b3;
+}
+
+.create-grade-page .error {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.create-grade-page .action-buttons {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.create-grade-page .action-buttons a.button {
+    display: inline-block;
+    padding: 10px 20px;
+    color: #007BFF;
+    background-color: transparent;
+    text-decoration: none;
+    border: 1px solid #007BFF;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: 0.3s;
+    margin: 5px;
+}
+
+.create-grade-page .action-buttons a.button:hover {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+.create-grade-page .action-buttons a.button-secondary {
+    border-color: #555;
+    color: #555;
+}
+
+.create-grade-page .action-buttons a.button-secondary:hover {
+    background-color: #555;
+    color: #fff;
+}
+/* Edit Grade Page Specific Styles */
+.edit-grade-page {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    padding: 40px 20px;
+    min-height: 100vh;
+}
+
+.edit-grade-page h1 {
+    text-align: center;
+    color: #333;
+    margin-top: 20px;
+}
+
+.edit-grade-page .container {
+    width: 50%;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.edit-grade-page form {
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-grade-page label {
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+
+.edit-grade-page input {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.edit-grade-page input:focus {
+    border-color: #007BFF;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.edit-grade-page button {
+    padding: 10px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.edit-grade-page button:hover {
+    background-color: #0056b3;
+}
+
+.edit-grade-page .error {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.edit-grade-page .button {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #007BFF;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: 1px solid #007BFF;
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+.edit-grade-page .button:hover {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+
+
+
+
+
+/* Header Styling */
+.list-grades-container h1 {
+    font-size: 32px;
+    color: #ffffff;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    animation: slideDown 0.8s ease-in-out;
+}
+
+/* Table Styling */
+.list-grades-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.list-grades-container table th,
+.list-grades-container table td {
+    border: 1px solid #ddd;
+    padding: 15px;
+    text-align: center;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.list-grades-container table th {
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    color: #ffffff;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.list-grades-container table td {
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.list-grades-container table tr:nth-child(even) td {
+    background-color: #f4f4f9;
+}
+
+.list-grades-container table tr:hover td {
+    background-color: #e6f7ff;
+    transform: scale(1.02);
+    transition: all 0.3s ease;
+}
+
+/* Center the action buttons */
+.list-grades-container .action-buttons {
+    text-align: center;
+    margin-top: 30px;
+}
+
+
+.list-grades-container .action-buttons  {
+    display: inline-block;
+    padding: 12px 20px;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    margin: 10px 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.list-grades-container .action-buttons a:hover {
+    background: linear-gradient(90deg, #0056b3, #003f7f);
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+
+
+

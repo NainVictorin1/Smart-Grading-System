@@ -10,24 +10,6 @@ import (
 	"github.com/NainVictorin1/smart-grade-system/internal/validator"
 )
 
-// ValidateGrade checks the grade fields for validity
-type Grade struct {
-	Fullname string
-	Email    string
-	Subject  string
-	Grade    float64
-}
-
-func ValidateGrade(v *validator.Validator, grade *Grade) {
-	v.Check(validator.NotBlank(grade.Fullname), "fullname", "must be provided")
-	v.Check(validator.MaxLength(grade.Fullname, 50), "fullname", "must not be more than 50 characters")
-	v.Check(validator.NotBlank(grade.Subject), "subject", "must be provided")
-	v.Check(validator.MaxLength(grade.Subject, 50), "subject", "must not be more than 50 characters")
-	v.Check(validator.NotBlank(grade.Email), "email", "must be provided")
-	v.Check(validator.IsValidEmail(grade.Email), "email", "invalid email address")
-	v.Check(grade.Grade >= 0 && grade.Grade <= 100, "grade", "must be between 0 and 100")
-}
-
 // Handler for the home page
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	tmpl, ok := app.templateCache["home.tmpl"] // Note: no "./ui/html/" here
@@ -75,22 +57,14 @@ func (app *application) viewGrade(w http.ResponseWriter, r *http.Request) {
 // Handler to create a grade
 func (app *application) createGrade(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		// Parse the form data
-		err := r.ParseForm()
-		if err != nil {
-			app.logger.Error("Failed to parse grade form", "error", err)
-			http.Error(w, "Bad Request", http.StatusBadRequest)
-			return
-		}
-
-		// Extract form values
-		fullname := r.PostForm.Get("fullname")
-		email := r.PostForm.Get("email")
-		subject := r.PostForm.Get("subject")
-		gradeStr := r.PostForm.Get("grade")
+		// Parse form values
+		fullname := r.PostFormValue("fullname")
+		email := r.PostFormValue("email")
+		subject := r.PostFormValue("subject")
+		gradeStr := r.PostFormValue("grade")
 
 		// Log the submitted data
-		app.logger.Info("Form values", "fullname", fullname, "email", email, "subject", subject, "grade", gradeStr)
+		app.logger.Info("Submitted data", "fullname", fullname, "email", email, "subject", subject, "grade", gradeStr)
 
 		// Convert grade string to float64
 		gradeValue, err := strconv.ParseFloat(gradeStr, 64)
@@ -108,32 +82,22 @@ func (app *application) createGrade(w http.ResponseWriter, r *http.Request) {
 
 		// Validate the Grade object
 		v := validator.New()
-		ValidateGrade(v, &Grade{
-			Fullname: grade.Fullname,
-			Email:    grade.Email,
-			Subject:  grade.Subject,
-			Grade:    grade.Grade,
-		})
+		data.ValidateGrade(v, grade)
 
 		// If validation fails, re-render the form with errors
 		if !v.Valid() {
-			data := NewTemplateData()
-			data.FormErrors = v.Errors
-			data.FormData = map[string]string{
+			td := NewTemplateData()
+			td.FormData = map[string]string{
 				"fullname": fullname,
 				"email":    email,
 				"subject":  subject,
 				"grade":    gradeStr,
 			}
-			tmpl, ok := app.templateCache["create_grade.tmpl"]
-			if !ok {
-				app.logger.Error("Template not found in cache", "template", "create_grade.tmpl")
-				http.Error(w, "Internal Server Error: Template not found", http.StatusInternalServerError)
-				return
-			}
-			err = tmpl.Execute(w, data)
+			td.FormErrors = v.Errors
+
+			err := app.render(w, http.StatusOK, "create_grade.tmpl", td)
 			if err != nil {
-				app.logger.Error("Failed to render the create_grade template", "template", "create_grade.tmpl", "error", err)
+				app.logger.Error("Failed to render create_grade.tmpl", "error", err)
 				http.Error(w, "Internal Server Error: Unable to render template", http.StatusInternalServerError)
 			}
 			return
@@ -148,24 +112,19 @@ func (app *application) createGrade(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Redirect to the grades list
-		http.Redirect(w, r, "/grade", http.StatusSeeOther)
+		http.Redirect(w, r, "/grades", http.StatusSeeOther)
 		return
 	}
 
 	// Render the create grade form
-	data := NewTemplateData()
-	tmpl, ok := app.templateCache["create_grade.tmpl"]
-	if !ok {
-		app.logger.Error("Template not found in cache", "template", "create_grade.tmpl")
-		http.Error(w, "Internal Server Error: Template not found", http.StatusInternalServerError)
-		return
-	}
-	err := tmpl.Execute(w, data)
+	td := NewTemplateData()
+	err := app.render(w, http.StatusOK, "create_grade.tmpl", td)
 	if err != nil {
-		app.logger.Error("Failed to render the create_grade template", "template", "create_grade.tmpl", "error", err)
+		app.logger.Error("Failed to render create_grade.tmpl", "error", err)
 		http.Error(w, "Internal Server Error: Unable to render template", http.StatusInternalServerError)
 	}
 }
+
 func (app *application) editGrade(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
 	if idStr == "" {
