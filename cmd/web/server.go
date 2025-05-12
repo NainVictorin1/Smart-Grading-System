@@ -9,7 +9,7 @@ import (
 // ServeHTTP initializes and starts the HTTP server.
 func (app *application) ServeHTTP() error {
 	// Register the routes
-	app.routes()
+	app.Routes()
 
 	// Create a custom HTTP server with timeouts
 	server := &http.Server{

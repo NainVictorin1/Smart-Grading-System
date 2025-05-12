@@ -15,7 +15,7 @@ func TestHomeHandler(t *testing.T) {
 	}
 	req := httptest.NewRequest("GET", "/", nil)
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(app.home)
+	handler := http.HandlerFunc(app.HomeHandler)
 	handler.ServeHTTP(rr, req)
 
 	// Check the status code

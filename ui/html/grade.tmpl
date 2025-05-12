@@ -11,6 +11,9 @@
 <div class="list-grades-container">
     <h1>{{.HeaderText}}</h1>
     {{if .SuccessMessage}}
+    {{with.Flash}}
+    <div class="flash> {{ .}} </div>
+    {{end}}
     <p style="color: green; text-align: center;">{{.SuccessMessage}}</p>
     {{end}}
     <table>

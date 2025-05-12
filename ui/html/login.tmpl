@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/login.css">
+    <style>
+        /* Highlight invalid input fields */
+        .error-input {
+            border: 2px solid red;
+        }
+
+        /* Error message styling */
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body class="login-page">
+    <header>
+        <h1>Login</h1>
+    </header>
+
+    <main>
+        <div class="form-container">
+            <form action="/login/submit" method="POST" novalidate onsubmit="return validateLoginForm()">
+                <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}">
+
+                {{ with .FormErrors.Error }}
+                    <div class="error">{{ . }}</div>
+                {{ end }}
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" value="{{ .FormData.Get "email" }}" required>
+                    <span class="error-message" id="email-error"></span>
+                    {{ with .FormErrors.email }}
+                        <div class="error">{{ . }}</div>
+                    {{ end }}
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                    <span class="error-message" id="password-error"></span>
+                    {{ with .FormErrors.password }}
+                        <div class="error">{{ . }}</div>
+                    {{ end }}
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn">Login</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Smart Grade Management System</p>
+    </footer>
+
+    <!-- JavaScript for client-side validation -->
+    <script>
+        function validateLoginForm() {
+            let isValid = true;
+
+            // Get form fields
+            const email = document.getElementById("email");
+            const password = document.getElementById("password");
+
+            // Clear previous error messages
+            document.getElementById("email-error").textContent = "";
+            document.getElementById("password-error").textContent = "";
+
+            // Validate email
+            if (email.value.trim() === "") {
+                email.classList.add("error-input");
+                document.getElementById("email-error").textContent = "Email is required.";
+                isValid = false;
+            } else if (!/\S+@\S+\.\S+/.test(email.value)) {
+                email.classList.add("error-input");
+                document.getElementById("email-error").textContent = "Invalid email format.";
+                isValid = false;
+            } else {
+                email.classList.remove("error-input");
+            }
+
+            // Validate password
+            if (password.value.trim() === "") {
+                password.classList.add("error-input");
+                document.getElementById("password-error").textContent = "Password is required.";
+                isValid = false;
+            } else {
+                password.classList.remove("error-input");
+            }
+
+            return isValid; // Prevent form submission if validation fails
+        }
+    </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 CREATE TABLE grade (
-    id BIGINT PRIMARY KEY DEFAULT nextval('grade_id_seq'::regclass),
+    id SERIAL PRIMARY KEY,
     created_at TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT now(),
     fullname TEXT NOT NULL,
     subject TEXT NOT NULL,

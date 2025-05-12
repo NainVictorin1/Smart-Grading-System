@@ -10,6 +10,7 @@
 <div class="edit-grade-page">
     <h1>Edit Grade</h1>
     <form action="/grades/edit?id={{.ID}}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}">
         {{if .FormErrors.fullname}}
         <p class="error">{{.FormErrors.fullname}}</p>
         {{end}}

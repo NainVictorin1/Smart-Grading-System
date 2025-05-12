@@ -10,6 +10,7 @@
 <div class="create-grade-page">
     <h1>Create Grade</h1>
     <form action="/create_grade" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}">
         {{if .FormErrors.fullname}}
         <p class="error">{{.FormErrors.fullname}}</p>
         {{end}}
@@ -38,7 +39,7 @@
     </form>
 
     <div class="action-buttons">
-        <a href="/create_grade" class="button">Create Grade</a>
+        <a href="/grade" class="button">View Grade</a>
         <a href="/" class="button button-secondary">Back to Home</a>
     </div>
 </div>

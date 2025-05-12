@@ -1,28 +1,36 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/NainVictorin1/smart-grade-system/internal/data"
+
+	"github.com/justinas/nosurf"
 
 	"github.com/NainVictorin1/smart-grade-system/internal/validator"
 )
 
 // Handler for the home page
-func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	tmpl, ok := app.templateCache["home.tmpl"] // Note: no "./ui/html/" here
-	if !ok {
-		app.logger.Error("Unable to load template", "template", "home.tmpl")
-		http.Error(w, "Unable to load template", http.StatusInternalServerError)
+func (app *application) HomeHandler(w http.ResponseWriter, r *http.Request) {
+	// Fetch all grades from the database
+	grades, err := app.grades.GetAllGrades()
+	if err != nil {
+		app.ServerError(w, err)
 		return
 	}
-	err := tmpl.Execute(w, nil)
-	if err != nil {
-		app.logger.Error("Unable to render template", "template", "home.tmpl", "error", err)
-		http.Error(w, fmt.Sprintf("Unable to render template: %v", err), http.StatusInternalServerError)
-	}
+
+	// Prepare the template data
+	td := NewTemplateData()
+	td.Grades = grades
+	td.CSRFToken = nosurf.Token(r)
+	td.IsAuthenticated = app.isAuthenticated(r) // Check if the user is logged in
+
+	// Render the home page using the "home.tmpl" template
+	app.Render(w, http.StatusOK, "home.tmpl", td)
 }
 
 // Handler to view grades
@@ -38,6 +46,7 @@ func (app *application) viewGrade(w http.ResponseWriter, r *http.Request) {
 	data.Title = "View Grades"
 	data.HeaderText = "Student Grades"
 	data.Grades = grades
+	data.CSRFToken = nosurf.Token(r)
 
 	tmpl, ok := app.templateCache["grade.tmpl"]
 	if !ok {
@@ -87,15 +96,15 @@ func (app *application) createGrade(w http.ResponseWriter, r *http.Request) {
 		// If validation fails, re-render the form with errors
 		if !v.Valid() {
 			td := NewTemplateData()
-			td.FormData = map[string]string{
-				"fullname": fullname,
-				"email":    email,
-				"subject":  subject,
-				"grade":    gradeStr,
+			td.FormData = url.Values{
+				"fullname": []string{fullname},
+				"email":    []string{email},
+				"subject":  []string{subject},
+				"grade":    []string{gradeStr},
 			}
 			td.FormErrors = v.Errors
 
-			err := app.render(w, http.StatusOK, "create_grade.tmpl", td)
+			err := app.Render(w, http.StatusOK, "create_grade.tmpl", td)
 			if err != nil {
 				app.logger.Error("Failed to render create_grade.tmpl", "error", err)
 				http.Error(w, "Internal Server Error: Unable to render template", http.StatusInternalServerError)
@@ -110,7 +119,7 @@ func (app *application) createGrade(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Internal Server Error: Unable to save grade", http.StatusInternalServerError)
 			return
 		}
-
+		// app.sessions.Put(r, "flash", "Grade successfully add.")
 		// Redirect to the grades list
 		http.Redirect(w, r, "/grades", http.StatusSeeOther)
 		return
@@ -118,7 +127,7 @@ func (app *application) createGrade(w http.ResponseWriter, r *http.Request) {
 
 	// Render the create grade form
 	td := NewTemplateData()
-	err := app.render(w, http.StatusOK, "create_grade.tmpl", td)
+	err := app.Render(w, http.StatusOK, "create_grade.tmpl", td)
 	if err != nil {
 		app.logger.Error("Failed to render create_grade.tmpl", "error", err)
 		http.Error(w, "Internal Server Error: Unable to render template", http.StatusInternalServerError)
@@ -158,18 +167,18 @@ func (app *application) editGrade(w http.ResponseWriter, r *http.Request) {
 		// Validate grade range
 		if gradeValue < 0 || gradeValue > 100 {
 			td := NewTemplateData()
-			td.FormData = map[string]string{
-				"fullname": fullname,
-				"email":    email,
-				"subject":  subject,
-				"grade":    gradeStr,
+			td.FormData = url.Values{
+				"fullname": []string{fullname},
+				"email":    []string{email},
+				"subject":  []string{subject},
+				"grade":    []string{gradeStr},
 			}
 			td.FormErrors = map[string]string{
 				"grade": "Grade must be a number between 0 and 100",
 			}
 			td.ID = id
 
-			err = app.render(w, http.StatusOK, "edit_grade.tmpl", td)
+			err = app.Render(w, http.StatusOK, "edit_grade.tmpl", td)
 			if err != nil {
 				app.logger.Error("Failed to render edit_grade.tmpl", "error", err)
 				http.Error(w, "Internal Server Error: Unable to render template", http.StatusInternalServerError)
@@ -209,15 +218,15 @@ func (app *application) editGrade(w http.ResponseWriter, r *http.Request) {
 
 	// Render the edit form
 	td := NewTemplateData()
-	td.FormData = map[string]string{
-		"fullname": grade.Fullname,
-		"email":    grade.Email,
-		"subject":  grade.Subject,
-		"grade":    fmt.Sprintf("%.2f", grade.Grade),
+	td.FormData = url.Values{
+		"fullname": []string{grade.Fullname},
+		"email":    []string{grade.Email},
+		"subject":  []string{grade.Subject},
+		"grade":    []string{fmt.Sprintf("%.2f", grade.Grade)},
 	}
 	td.ID = int(grade.ID)
 
-	err = app.render(w, http.StatusOK, "edit_grade.tmpl", td)
+	err = app.Render(w, http.StatusOK, "edit_grade.tmpl", td)
 	if err != nil {
 		app.logger.Error("Failed to render edit_grade.tmpl", "error", err)
 		http.Error(w, "Internal Server Error: Unable to render template", http.StatusInternalServerError)
@@ -263,9 +272,207 @@ func (app *application) deleteGrade(w http.ResponseWriter, r *http.Request) {
 	td.Grades = grades
 	td.SuccessMessage = "Grade successfully deleted."
 
-	err = app.render(w, http.StatusOK, "grade.tmpl", td)
+	err = app.Render(w, http.StatusOK, "grade.tmpl", td)
 	if err != nil {
 		app.logger.Error("Failed to render grade.tmpl", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
+}
+func (app *application) LoginForm(w http.ResponseWriter, r *http.Request) {
+	td := NewTemplateData()
+	td.CSRFToken = nosurf.Token(r)
+	td.IsAuthenticated = app.isAuthenticated(r) // Set the IsAuthenticated field
+
+	err := app.Render(w, http.StatusOK, "login.tmpl", td)
+	if err != nil {
+		app.logger.Error("failed to render template", "template", "login.tmpl", "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+}
+
+func (app *application) isAuthenticated(r *http.Request) bool {
+	session, err := app.SessionStore.Get(r, SessionName)
+	if err != nil {
+		return false // If there's an error retrieving the session, assume the user is not authenticated
+	}
+
+	// Check if the session contains the user ID
+	_, ok := session.Values[SessionUserKey]
+	return ok
+}
+
+// LoginHandler authenticates the user and starts a session.
+func (app *application) LoginHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	err := r.ParseForm()
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	// Extract email and password from the form
+	email := r.PostForm.Get("email")
+	password := r.PostForm.Get("password")
+
+	// Validate email and password
+	v := validator.New()
+	v.Check(validator.NotBlank(email), "email", "Email is required")
+	v.Check(validator.IsValidEmail(email), "email", "Invalid email format")
+	v.Check(validator.NotBlank(password), "password", "Password is required")
+
+	if !v.Valid() {
+		// Render the form again with validation errors
+		td := NewTemplateData()
+		td.FormErrors = v.Errors
+		td.FormData = url.Values{
+			"email": []string{email}, // Preserve the entered email
+		}
+		app.Render(w, http.StatusOK, "login.tmpl", td)
+		return
+	}
+
+	// Lookup user by email
+	user, err := app.users.GetByEmail(email)
+	if err != nil {
+		if errors.Is(err, data.ErrRecordNotFound) {
+			// Show invalid credentials if user not found
+			td := NewTemplateData()
+			td.FormErrors = map[string]string{
+				"Error": "Invalid email or password",
+			}
+			td.FormData = url.Values{
+				"email": []string{email}, // Preserve the entered email
+			}
+			app.Render(w, http.StatusOK, "login.tmpl", td)
+			return
+		}
+		app.ServerError(w, err)
+		return
+	}
+
+	// Compare passwords
+	err = user.MatchesPassword(password)
+	if err != nil {
+		td := NewTemplateData()
+		td.FormErrors = map[string]string{
+			"Error": "Invalid email or password",
+		}
+		td.FormData = url.Values{
+			"email": []string{email}, // Preserve the entered email
+		}
+		app.Render(w, http.StatusOK, "login.tmpl", td)
+		return
+	}
+
+	// Create a session and store user ID
+	session, err := app.SessionStore.Get(r, SessionName)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	session.Values[SessionUserKey] = user.ID
+	if err := session.Save(r, w); err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	// Redirect to the home page after successful login
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
+}
+
+// SignupForm displays the signup form.
+func (app *application) SignupForm(w http.ResponseWriter, r *http.Request) {
+	td := NewTemplateData()
+	td.CSRFToken = nosurf.Token(r)              // Add CSRF token for protection
+	td.IsAuthenticated = app.isAuthenticated(r) // Set the IsAuthenticated field
+	td.ErrorsFromForm = make(map[string]string) // Initialize ErrorsFromForm
+
+	app.Render(w, http.StatusOK, "signup.tmpl", td)
+}
+
+// SignupHandler processes user registration.
+func (app *application) SignupHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	err := r.ParseForm()
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	// Create a new user instance
+	user := &data.User{
+		Name:      r.PostForm.Get("name"),
+		Email:     r.PostForm.Get("email"),
+		Activated: true,
+	}
+
+	// Validate the user using the centralized validation function
+	v := validator.New()
+	data.ValidateUser(v, user, r)
+
+	if !v.Valid() {
+		// Render the form again with validation errors
+		td := NewTemplateData()
+		td.FormErrors = v.Errors
+		td.FormData = url.Values{
+			"name":  []string{user.Name},
+			"email": []string{user.Email},
+		}
+		app.Render(w, http.StatusOK, "signup.tmpl", td)
+		return
+	}
+
+	// Hash the password
+	password := r.PostForm.Get("password")
+	err = user.SetPassword(password)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	// Attempt to insert the user into the database
+	err = app.users.Insert(user)
+	if err != nil {
+		if errors.Is(err, data.ErrDuplicateEmail) {
+			// Handle duplicate email error
+			v.Errors["email"] = "Email already in use"
+			td := NewTemplateData()
+			td.FormErrors = v.Errors
+			td.FormData = url.Values{
+				"name":  []string{user.Name},
+				"email": []string{user.Email},
+			}
+			app.Render(w, http.StatusOK, "signup.tmpl", td)
+			return
+		}
+		app.ServerError(w, err)
+		return
+	}
+
+	// Redirect to the login page
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+}
+func (app *application) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := app.SessionStore.Get(r, SessionName)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	delete(session.Values, SessionUserKey)
+	if err := session.Save(r, w); err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
